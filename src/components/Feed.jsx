@@ -26,6 +26,10 @@ const Feed = () => {
     getFeed();
   }, []);
 
+  if (!feed) return;
+
+  if(feed.length <= 0) return <h1 className='flex justify-center my-10'>Feed Empty</h1>
+
   return (
     (feed && <div className='flex justify-center my-3'>
       <UserCard user={feed[0]} />

@@ -10,6 +10,10 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errMessage, setErrMessage] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+
+  const [isloginForm, setIsLoginForm] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
@@ -30,11 +34,41 @@ const Login = () => {
     }
   }
 
+  const signUpHandler = async () => {
+    try {
+      const res = await axios.post(BASE_URL + "/signup", {
+        firstName,
+        lastName,
+        email,
+        password
+      }, { withCredentials: true }
+      );
+
+      dispatch(adduser(res.data.data));
+      navigate("/profile"); 
+
+    } catch (error) {
+      setErrMessage(error.response.data);
+    }
+  }
+
   return (
     <div className="flex justify-center my-20">
       <div className="card bg-base-300 w-96 shadow-xl">
         <div className="card-body">
-          <h2 className="card-title justify-center">Login</h2>
+          <h2 className="card-title justify-center">{!isloginForm ? "Login" : "SignUp"}</h2>
+
+
+          {isloginForm &&
+            <>
+              <label className="input input-bordered flex items-center gap-2 m-2">
+                <input type="text" className="grow" placeholder="FirstName" value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
+              </label>
+
+              <label className="input input-bordered flex items-center gap-2 m-2">
+                <input type="text" className="grow" placeholder="LastName" value={lastName} onChange={(e) => setLastName(e.target.value)}/>
+              </label>
+          </>}
 
           <label className="input input-bordered flex items-center gap-2 m-2">
             <svg
@@ -67,8 +101,12 @@ const Login = () => {
 
           <p className="text-red-500 flex justify-center">{errMessage}</p>
           <div className="card-actions justify-center m-2">
-            <button className="btn btn-primary" onClick={loginHandler}>Login</button>
+            <button className="btn btn-primary" onClick={!isloginForm ? loginHandler:signUpHandler}>{!isloginForm ? "Login" : "SignUp"}</button>
           </div>
+
+          <p className="m-auto cursor-pointer py-2" onClick={() => { setIsLoginForm(!isloginForm) }}>
+            {!isloginForm ? "New User? Sign Up" : "Existing User? Log In"}
+          </p>
         </div>
       </div>
     </div>

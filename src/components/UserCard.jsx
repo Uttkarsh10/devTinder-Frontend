@@ -1,22 +1,23 @@
+import axios from "axios";
 import React from "react";
+import { BASE_URL } from "../utils/constants";
+import { useDispatch } from "react-redux";
+import { removeUserFromFeed } from "../utils/feedSlice";
 
 const UserCard = ({ user }) => {
-  const { firstName, lastName, about, skills, photoURL, age, gender } = user;
+  const { _id, firstName, lastName, about, skills, photoURL, age, gender } = user;
+  const dispatch = useDispatch();
+
+  const handleSendRequest = async (status, userId) => {
+    try {
+      const res = axios.post(BASE_URL + "/request/send/" + status + "/" + userId, {}, { withCredentials: true });
+      dispatch(removeUserFromFeed(userId))
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  }
+
   return (
-    // <div className="card bg-base-300 w-96 shadow-xl h-5/6">
-    //   <figure>
-    //     <img src={photoURL} alt="User Image"/>
-    //   </figure>
-    //   <div className="card-body">
-    //     <h2 className="card-title">{firstName + " " + lastName}</h2>
-    //     <p className="p-0">{about}</p>
-    //     {age && gender && <p className="p-0">{age + "," + gender}</p>}
-    //     <div className="card-actions justify-center my-4">
-    //       <button className="btn btn-primary">Interested</button>
-    //       <button className="btn btn-secondary">Ignore</button>
-    //     </div>
-    //   </div>
-    // </div>
 
     <div className="card bg-base-300 w-96 shadow-xl h-5/6 flex flex-col">
       <figure className="flex-shrink-0">
@@ -31,8 +32,8 @@ const UserCard = ({ user }) => {
         <p className="p-0 text-sm">{about}</p>
         {age && gender && <p className="p-0 text-sm">{`${age}, ${gender}`}</p>}
         <div className="card-actions justify-center mt-auto">
-          <button className="btn btn-primary">Interested</button>
-          <button className="btn btn-secondary">Ignore</button>
+          <button className="btn btn-primary" onClick={() => handleSendRequest("Interested", _id)}>Interested</button>
+          <button className="btn btn-secondary" onClick={() => handleSendRequest("Ignored", _id)}>Ignore</button>
         </div>
       </div>
     </div>
